@@ -1,0 +1,21 @@
+{
+    "name": "serbanrobu/purestruct",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Purestruct\\": "src/"
+        },
+        "files": [
+            "src/index.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "Șerban Robu",
+            "email": "serbanrobu@protonmail.com"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    }
+}
