@@ -73,11 +73,8 @@ class Validator
 
     public function required(): static
     {
-        return $this->bind(
-            static fn (mixed $v) => empty($v)
-                ? static::fail("This field is required")
-                : static::succeed($v),
-        );
+        return static::mixed()
+            ->bind(fn (mixed $v) => empty($v) ? static::fail('This field is required') : $this);
     }
 
     public function field(string $name): static

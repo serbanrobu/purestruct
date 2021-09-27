@@ -66,11 +66,8 @@ class Decoder
 
     public function required(): static
     {
-        return $this->bind(
-            static fn (mixed $v) => empty($v)
-                ? static::fail("Must not be empty")
-                : static::succeed($v),
-        );
+        return static::mixed()
+            ->bind(fn (mixed $v) => empty($v) ? static::fail('Must not be empty') : $this);
     }
 
     public function field(string $name): static
