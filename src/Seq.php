@@ -97,7 +97,7 @@ class Seq implements JsonSerializable, IteratorAggregate
     public function foldr(callable $f, mixed $initial): mixed
     {
         return $this->match(
-            nil: static fn () => static::nil(),
+            nil: static fn () => $initial,
             cons: static fn (mixed $head, self $tail) => $f($head, $tail->foldr($f, $initial)),
         );
     }
@@ -129,7 +129,11 @@ class Seq implements JsonSerializable, IteratorAggregate
 
     public static function fromArray(array $values)
     {
-        return array_reduce($values, static fn (self $acc, mixed $cur) => $acc->cons($cur), static::nil());
+        return array_reduce(
+            array_reverse($values),
+            static fn (self $acc, mixed $cur) => $acc->cons($cur),
+            static::nil(),
+        );
     }
 
     public function null(): bool
