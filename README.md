@@ -29,7 +29,7 @@ If you don't value total functions, this library might not be for you.
 You can install the package via composer:
 
 ```sh
-composer require serbanrobu/purescruct
+composer require serbanrobu/purestruct
 ```
 
 ## Credits :clap:
