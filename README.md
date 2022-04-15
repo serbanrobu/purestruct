@@ -921,7 +921,3 @@ MIT
     the benefits offered by immutability are: it makes the code more testable,
     readable, allows you to reason more easily about the code, it helps making
     illegal states unrepresentable, thread-safety, etc.
-
----
-
-PS: I hate PHP :trollface:
