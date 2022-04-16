@@ -500,7 +500,7 @@ the validator implementation for the User class. The structure may also contain
 nested validatable structures. For nested structures, the `Validatable` trait
 does not even need to be included.
 
-For exmple:
+For example:
 
 ```php
 class Address
