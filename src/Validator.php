@@ -8,6 +8,7 @@ use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionUnionType;
+use Countable;
 
 class Validator
 {
@@ -74,7 +75,22 @@ class Validator
     public function required(): static
     {
         return static::mixed()
-            ->bind(fn (mixed $v) => empty($v) ? static::fail('This field is required') : $this);
+            ->bind(
+                function (mixed $v): self {
+                    $passes = match (gettype($v)) {
+                        'string' => strlen($v) > 0,
+                        'array' => count($v) > 0,
+                        'object' => $v instanceof Countable
+                            ? $v->count() > 0
+                            : !is_null($v),
+                        default => !is_null($v),
+                    };
+
+                    return $passes
+                        ? $this
+                        : static::fail('This field is required');
+                },
+            );
     }
 
     public function field(string $name): static

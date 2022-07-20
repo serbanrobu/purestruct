@@ -5,6 +5,7 @@ namespace Tests;
 use PHPUnit\Framework\TestCase;
 use Purestruct\Decoder;
 use Purestruct\Seq;
+use Countable;
 
 class DecoderTest extends TestCase
 {
@@ -35,6 +36,44 @@ class DecoderTest extends TestCase
         $this->assertTrue(Decoder::object()->decode(['a' => 1])->isLeft());
 
         $this->assertTrue(Decoder::string()->required()->decode('a')->isRight());
+        $this->assertTrue(Decoder::string()->required()->decode('0')->isRight());
+        $this->assertTrue(Decoder::string()->required()->decode('false')->isRight());
+        $this->assertTrue(Decoder::bool()->required()->decode(false)->isRight());
+        $this->assertTrue(Decoder::int()->required()->decode(0)->isRight());
+        $this->assertTrue(Decoder::mixed()->required()->decode(null)->isLeft());
+        $this->assertTrue(Decoder::string()->array()->required()->decode([])->isLeft());
+        $this->assertTrue(Decoder::int()->array()->required()->decode([0])->isRight());
+        $this->assertTrue(Decoder::mixed()->required()->decode((object) [])->isRight());
+
+        $this->assertTrue(
+            Decoder::mixed()
+                ->required()
+                ->decode(
+                    new class implements Countable
+                    {
+                        public function count(): int
+                        {
+                            return 0;
+                        }
+                    },
+                )
+                ->isLeft(),
+        );
+
+        $this->assertTrue(
+            Decoder::mixed()
+                ->required()
+                ->decode(
+                    new class implements Countable
+                    {
+                        public function count(): int
+                        {
+                            return 1;
+                        }
+                    },
+                )
+                ->isRight(),
+        );
 
         $this->assertTrue(Decoder::string()->min(2)->decode('ab')->isRight());
         $this->assertTrue(Decoder::string()->min(2)->decode('a')->isLeft());

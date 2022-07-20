@@ -8,6 +8,7 @@ use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionUnionType;
 use Stringable;
+use Countable;
 
 class Decoder
 {
@@ -67,7 +68,22 @@ class Decoder
     public function required(): static
     {
         return static::mixed()
-            ->bind(fn (mixed $v) => empty($v) ? static::fail('Must not be empty') : $this);
+            ->bind(
+                function (mixed $v): self {
+                    $passes = match (gettype($v)) {
+                        'string' => strlen($v) > 0,
+                        'array' => count($v) > 0,
+                        'object' => $v instanceof Countable
+                            ? $v->count() > 0
+                            : !is_null($v),
+                        default => !is_null($v),
+                    };
+
+                    return $passes
+                        ? $this
+                        : static::fail('Must not be empty');
+                },
+            );
     }
 
     public function field(string $name): static
