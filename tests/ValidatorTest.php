@@ -5,6 +5,7 @@ namespace Tests;
 use PHPUnit\Framework\TestCase;
 use Purestruct\Validator;
 use Purestruct\Seq;
+use Countable;
 
 class ValidatorTest extends TestCase
 {
@@ -35,6 +36,44 @@ class ValidatorTest extends TestCase
         $this->assertTrue(Validator::object()->validate(['a' => 1])->isFailure());
 
         $this->assertTrue(Validator::string()->required()->validate('a')->isSuccess());
+        $this->assertTrue(Validator::string()->required()->validate('0')->isSuccess());
+        $this->assertTrue(Validator::string()->required()->validate('false')->isSuccess());
+        $this->assertTrue(Validator::bool()->required()->validate(false)->isSuccess());
+        $this->assertTrue(Validator::int()->required()->validate(0)->isSuccess());
+        $this->assertTrue(Validator::mixed()->required()->validate(null)->isFailure());
+        $this->assertTrue(Validator::string()->array()->required()->validate([])->isFailure());
+        $this->assertTrue(Validator::int()->array()->required()->validate([0])->isSuccess());
+        $this->assertTrue(Validator::mixed()->required()->validate((object) [])->isSuccess());
+
+        $this->assertTrue(
+            Validator::mixed()
+                ->required()
+                ->validate(
+                    new class implements Countable
+                    {
+                        public function count(): int
+                        {
+                            return 0;
+                        }
+                    },
+                )
+                ->isFailure(),
+        );
+
+        $this->assertTrue(
+            Validator::mixed()
+                ->required()
+                ->validate(
+                    new class implements Countable
+                    {
+                        public function count(): int
+                        {
+                            return 1;
+                        }
+                    },
+                )
+                ->isSuccess(),
+        );
 
         $this->assertTrue(Validator::string()->min(2)->validate('ab')->isSuccess());
         $this->assertTrue(Validator::string()->min(2)->validate('a')->isFailure());
